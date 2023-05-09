@@ -1,0 +1,169 @@
+blueprint:
+  name: ZwaveJS - Sunricher - 4 Channel Dimmer Remote Control
+  description: |
+    Controll stuff with the 4-channel remote
+
+  domain: automation
+  input:
+    remote:
+      name: Remote
+      description: Namron controller
+      selector:
+        device:
+          integration: zwave_js
+          manufacturer: Sunricher
+
+          
+    all_on:
+      name: "All On"
+      description: Action to run on the All on button
+      default: []
+      selector:
+        action:
+    all_off:
+      name: "All Off"
+      description: Action to run on the All off button
+      default: []
+      selector:
+        action:
+  
+    ch1_on:
+      name: "Channel 1 On"
+      description: Action to run on the Channel 1 On button
+      default: []
+      selector:
+        action:
+    ch1_off:
+      name: "Channel 1 Off"
+      description: Action to run on the Channel 1 Off button
+      default: []
+      selector:
+        action:
+  
+    ch2_on:
+      name: "Channel 2 On"
+      description: Action to run on the Channel 2 On button
+      default: []
+      selector:
+        action:
+    ch2_off:
+      name: "Channel 2 Off"
+      description: Action to run on the Channel 2 Off button
+      default: []
+      selector:
+        action:
+
+    ch3_on:
+      name: "Channel 3 On"
+      description: Action to run on the Channel 3 On button
+      default: []
+      selector:
+        action:
+    ch3_off:
+      name: "Channel 3 Off"
+      description: Action to run on the Channel 3 Off button
+      default: []
+      selector:
+        action:
+
+    ch4_on:
+      name: "Channel 4 On"
+      description: Action to run on the Channel 4 On button
+      default: []
+      selector:
+        action:
+    ch4_off:
+      name: "Channel 4 Off"
+      description: Action to run on the Channel 4 Off button
+      default: []
+      selector:
+        action:
+
+    s1:
+      name: "S1"
+      description: Action to run on the S1 button
+      default: []
+      selector:
+        action:
+    s2:
+      name: "S2"
+      description: Action to run on the S2 button
+      default: []
+      selector:
+        action:
+
+mode: queued
+max: 70
+max_exceeded: silent
+
+
+trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: !input remote
+      command_class_name: Central Scene
+
+
+condition: []
+action:
+  - variables:
+      property_key: "{{ trigger.event.data.property_key }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"001\" }}{# A:1 #}"
+        sequence: !input all_on
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"002\" }}{# A:0 #}"
+        sequence: !input all_off
+
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"003\" }}{# 1:1 #}"
+        sequence: !input ch1_on
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"004\" }}{# 1:0 #}"
+        sequence: !input ch1_off
+
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"005\" }}{# 2:1 #}"
+        sequence: !input ch2_on
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"006\" }}{# 2:0 #}"
+        sequence: !input ch2_off
+
+
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"007\" }}{# 3:1 #}"
+        sequence: !input ch3_on
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"008\" }}{# 3:0 #}"
+        sequence: !input ch3_off
+
+
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"009\" }}{# 4:1 #}"
+        sequence: !input ch4_on
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"010\" }}{# 4:0 #}"
+        sequence: !input ch4_off
+
+
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"011\" }}{# S1 #}"
+        sequence:  !input s1
+      - conditions:
+          - condition: template
+            value_template: "{{ property_key == \"012\" }}{# S2 #}"
+        sequence: !input s2
+    default: []
