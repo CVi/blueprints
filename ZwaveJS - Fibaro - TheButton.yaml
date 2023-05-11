@@ -1,0 +1,119 @@
+blueprint:
+  name: ZwaveJS - Fibaro - TheButton
+  description: |
+    Controll stuff with the button
+
+  domain: automation
+  input:
+    remote:
+      name: Remote
+      description: The button
+      selector:
+        device:
+          integration: zwave_js
+          manufacturer: Fibargroup
+
+          
+    press1:
+      name: "One press"
+      description: Action to run on one press
+      default: []
+      selector:
+        action:
+
+    press2:
+      name: "Two Presses"
+      description: Action to run on two presses
+      default: []
+      selector:
+        action:
+  
+    press3:
+      name: "Three presses"
+      description: Action to run on three presses
+      default: []
+      selector:
+        action:
+
+    press4:
+      name: "Four Presses"
+      description: Action to run on four presses
+      default: []
+      selector:
+        action:
+  
+    press5:
+      name: "Five presses"
+      description: Action to run on five presses
+      default: []
+      selector:
+        action:
+
+    presshold:
+      name: "Long press"
+      description: Action to run on long press
+      default: []
+      selector:
+        action:
+
+    pressrelease:
+      name: "Long press release"
+      description: Action to run on release from long press
+      default: []
+      selector:
+        action:
+
+
+mode: queued
+max: 70
+max_exceeded: silent
+
+
+alias: The Button
+description: ""
+trigger:
+  - platform: event
+    event_type: zwave_js_value_notification
+    event_data:
+      device_id: !input remote
+      command_class_name: Central Scene
+
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyPressed\" }}{# 1cl #}"
+        sequence: !input press1
+
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyPressed2x\" }}{# 2cl #}"
+        sequence: !input press2
+
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyPressed3x\" }}{# 3cl #}"
+        sequence: !input press3
+
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyPressed4x\" }}{# 4cl #}"
+        sequence: !input press4
+
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyPressed5x\" }}{# 5cl #}"
+        sequence:  !input press5
+
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyHeldDown\" }}{# hold #}"
+        sequence:  !input presshold
+
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.event.data.value == \"KeyReleased\" }}{# release #}"
+        sequence:  !input pressrelease
+
+    default: []
